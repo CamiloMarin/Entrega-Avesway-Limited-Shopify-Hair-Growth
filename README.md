@@ -33,5 +33,3 @@ Se configuraron tres flujos automatizados:
 - Todas las secciones fueron diseñadas para ofrecer mayor flexibilidad y una mejor gestión dentro del editor de Shopify.
 
 ---
-
-Este README ofrece una visión general del trabajo desarrollado, manteniendo la documentación clara, profesional y fácil de entender.
