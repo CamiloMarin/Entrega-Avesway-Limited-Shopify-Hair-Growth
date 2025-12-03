@@ -1,0 +1,1444 @@
+<section
+  class="custom-gallery-masonry"
+  style="margin: {{section.settings.top_padding_masonry}}px 0 {{ section.settings.bottom_padding_masonry }}px 0;"
+>
+  <div class="container">
+    <div class="custom-title-masonry full-width-page">
+      <h2 class="title inline-richtext h0 scroll-trigger animate--slide-in">
+        {{ section.settings.title_custom_masonry }}
+      </h2>
+    </div>
+    <div class="list-grid-container{% if section.settings.full_width_section %} full-width-page {% else %} page-width {% endif %}">
+      <ul
+        class="gallery-masonry"
+        style=" grid-auto-rows: {{ section.settings.row_size_grid_masonry }}px; grid-template-columns: repeat({{ section.settings.colum_size_grid_masonry }}, 1fr);"
+      >
+        {% for block in section.blocks %}
+          {% assign blocks_count = blocks_count | plus: 1 %}
+
+          {% if blocks_count > 0 %}
+            <li
+              class="gallery-item size-{{ block.settings.image_size | default: 'normal' }}{% if block.settings.add_hover_effect %} hover-effect{% endif %}{% if block.settings.add_shadow %} with-shadow{% endif %}"
+
+              style="{% if block.settings.custom_background_color != blank %}background-color: {{ block.settings.custom_background_color }}; padding: {{ block.settings.image_padding | default: 0 }}px; {% endif %} {% if block.settings.Product_info_data != blank %}cursor: pointer;{% endif %}"
+
+              {% if block.settings.Product_info_data != blank %}
+                onclick="openReviewModal('{{ block.id }}')"
+              {% endif %}
+            >
+              <img
+                src="{{ block.settings.image_box | img_url: 'large' }}"
+                height="auto"
+                alt="{{ block.settings.image_alt | default: block.settings.image_box.alt | escape }}"
+                loading="{{ block.settings.loading_type | default: 'lazy' }}"
+                width= "100%";
+                height= "100%";
+                style="
+                  border-radius: {{ block.settings.border_radius | default: 0 }}px;
+                  {% if block.settings.image_border_width > 0 %}border: {{ block.settings.image_border_width }}px {{ block.settings.image_border_style }} {{ block.settings.image_border_color }};{% endif %}
+                  {% if block.settings.image_filter != 'none' %}filter: {{ block.settings.image_filter }};{% endif %}
+                  {% if block.settings.image_opacity != blank %}opacity: {{ block.settings.image_opacity | divided_by: 100.0 }};{% endif %}
+                  cursor: pointer;
+                "
+              >
+
+              <div
+                class="image-overlay"
+                style="background-color: rgba(0,0,0,{{ block.settings.overlay_opacity | default: 50 | divided_by: 100.0 }});"
+              >
+                <div
+                  class="overlay-content"
+                  style="color: {{ block.settings.overlay_text_color | default: '#ffffff' }}; "
+                >
+                  {% if block.settings.overlay_title != blank %}
+                    <h3
+                      class="overlay-title"
+                      style="color: {{ block.settings.overlay_text_color | default: '#ffffff' }};"
+                    >
+                      {{ block.settings.overlay_title }}
+                    </h3>
+                  {% endif %}
+                  <p class="overlay-text">{{ block.settings.image_overlay_text }}</p>
+                </div>
+              </div>
+
+              <!-- Hidden data for modal -->
+              <div class="modal-data-{{ block.id }}" style="display: none;">
+                {% if block.settings.Product_info_data %}
+                  {% assign product = all_products[block.settings.Product_info_data.handle] %}
+                  <!-- Product Json -->
+                  <div class="product-data" style="display: none;" 
+                    data-product-json="{{ product | json | escape }}">
+                  </div>
+                  <div data-product-title="{{ product.title | escape }}"></div>
+                  <div data-product-price="{{ product.price | money }}"></div>
+                  <div data-product-id="{{ product.id }}"></div>
+                  <div data-product-handle="{{ product.handle }}"></div>
+                  <div data-product-url="{{ product.url }}"></div>
+                  {% for image in product.images %}
+                    <div data-product-image="{{ image | img_url: 'large' }}"></div>
+                  {% endfor %}
+
+                  <!-- Review url -->
+                  {% assign url_page_review_of_product = product.metafields.custom.link_to_review_page %}
+                  {% if url_page_review_of_product != blank %}
+                    <div data-review-button-url="{{ url_page_review_of_product }}"></div>
+                  {% endif %}
+                {% endif %}
+                <div data-review-user="{{ block.settings.review_user_name | escape }}"></div>
+                <div data-review-description="{{ block.settings.review_description }}"></div>
+                <div data-review-stars="{{ block.settings.review_stars }}"></div>
+                <div data-review-stars="{{ block.settings.review_stars }}"></div>
+                <div data-review-button-text="{{ block.settings.review_button_text | escape }}"></div>
+
+              </div>
+            </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- Modal Structure -->
+<div id="reviewModal" class="modal-overlay">
+  <div class="modal-content">
+    <span class="modal-close" onclick="closeReviewModal()">&times;</span>
+    <div class="modal-body">
+      <!-- Review Section -->
+      <div class="review-section">
+        <div class="review-header">
+          <div class="review-user">
+            <div class="user-avatar">
+              <span id="userInitials"></span>
+            </div>
+            <div class="user-info">
+              <h4 id="userName"></h4>
+              <div class="stars-parent">
+                <div class="stars-number-container" id="starsNumber"></div>
+                <div class="stars-container" id="starsContainer" style="display: flex; gap: 4px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="review-content">
+        <div id="reviewDescription"></div>
+      </div>
+          <!-- Leave a Review Btn -->
+          <a href="" id="customActionBtn" target="_blank" class="btn-custom-action">
+            <span id="customActionText">Leave a Review</span>
+          </a>
+                    <!-- Product Data Url -->
+          <a href="#" id="customProduct_btn" target="_blank" class="custom-btn-custom-action button">
+            <span id="customActionText">View Product</span>
+          </a>
+    </div>
+
+    <!-- Product Section -->
+    <div class="product-section">
+      <div class="product-images">
+        <div class="image-carousel">
+          <div class="carousel-container" id="carouselContainer">
+            <!-- Images will be inserted here -->
+          </div>
+          <button class="carousel-btn prev" onclick="prevImage()" id="prevBtn">‹</button>
+          <button class="carousel-btn next" onclick="nextImage()" id="nextBtn">›</button>
+        </div>
+      </div>
+
+      <div class="product-info">
+        <h3 id="productTitle"></h3>
+        <div class="product-price" id="productPrice"></div>
+        <div class="product-actions">
+          <form action="{{ routes.cart_add_url }}" method="post" enctype="multipart/form-data" id="addToCartForm">
+            <input type="hidden" name="id" id="productVariantId" value="">
+            <!-- Selector de variantes (solo si hay múltiples) -->
+            <select name="id" id="select_VariantId" style="display: none;">
+              <!-- Se populará dinámicamente -->
+            </select>
+
+            <button type="submit" class="custom-btn-add-to-cart">
+              <span>Add to Cart</span>
+              <div class="loading__spinner hidden" style="display: none;">Loading...</div>
+            </button>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+
+  form#addToCartForm {
+    display: flex;
+    gap: 15px;
+    flex-direction: column;
+  }
+  
+  a#customProduct_btn {
+    width: 100%;
+  }
+
+  /* Estilo para el selector de variantes */
+  #select_VariantId {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    font-weight: 500;
+    background: #fff;
+    color: #333;
+    appearance: none; /* quita el estilo nativo */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  /* Ícono de flecha custom */
+  #select_VariantId {
+    background-image: url("data:image/svg+xml;utf8,<svg fill='gray' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+  }
+
+  /* Hover y focus */
+  #select_VariantId:hover {
+    border-color: #999;
+  }
+
+  #select_VariantId:focus {
+    outline: none;
+    border-color: #2c5aa0;
+    box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.2);
+  }
+
+  div#reviewDescription {
+    font-style: italic;
+    display: flex;
+    align-items: center;
+  }
+  div#reviewDescription p {
+    word-break: break-all;
+  }
+  .stars-parent {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-weight: bold;
+  }
+
+  .full-width-page {
+      margin: 0 50px;
+  }
+
+  .gallery-masonry {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+
+
+      grid-gap: 1rem;
+      grid-auto-flow: dense;
+  }
+
+  .gallery-masonry img {
+      display: block;
+      object-fit: cover;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.3s ease, filter 0.3s ease;
+  }
+
+  .gallery-item {
+      position: relative;
+      overflow: hidden;
+  }
+
+  /* Efectos hover */
+  .gallery-item.hover-effect:hover img {
+      transform: scale(1.05);
+  }
+
+  .gallery-item.hover-effect:hover {
+
+  }
+
+  /* Sombras */
+  .gallery-item.with-shadow {
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      transition: box-shadow 0.3s ease;
+  }
+
+  .gallery-item.with-shadow:hover {
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Overlay de texto */
+  .image-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+  }
+
+  .gallery-item:hover .image-overlay {
+      opacity: 1;
+  }
+
+  .overlay-content {
+      text-align: center;
+      padding: 1rem;
+  }
+
+  .overlay-title {
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      margin-top: 0;
+  }
+
+  .overlay-text {
+      margin: 0;
+      line-height: 1.4;
+  }
+
+  /* TamaÃ±os predefinidos que se adaptan responsivamente */
+
+  /* TamaÃ±o normal - 1x1 */
+  .gallery-item.size-normal {
+      grid-column: span 1;
+      grid-row: span 1;
+  }
+
+  /* TamaÃ±o ancho - 2x1 */
+  .gallery-item.size-wide {
+      grid-column: span 2;
+      grid-row: span 1;
+  }
+
+  /* TamaÃ±o alto - 1x2 */
+  .gallery-item.size-tall {
+      grid-column: span 1;
+      grid-row: span 2;
+  }
+
+  /* TamaÃ±o grande - 2x2 */
+  .gallery-item.size-large {
+      grid-column: span 2;
+      grid-row: span 2;
+  }
+
+  /* TamaÃ±o extra ancho - 3x1 */
+  .gallery-item.size-extra-wide {
+      grid-column: span 3;
+      grid-row: span 1;
+  }
+
+  /* TamaÃ±o extra alto - 1x3 */
+  .gallery-item.size-extra-tall {
+      grid-column: span 1;
+      grid-row: span 3;
+  }
+
+  /* TamaÃ±o rectangular horizontal - 3x2 */
+  .gallery-item.size-horizontal-large {
+      grid-column: span 3;
+      grid-row: span 2;
+  }
+
+  /* TamaÃ±o rectangular vertical - 2x3 */
+  .gallery-item.size-vertical-large {
+      grid-column: span 2;
+      grid-row: span 3;
+  }
+
+  /* TamaÃ±o gigante - 3x3 */
+  .gallery-item.size-giant {
+      grid-column: span 3;
+      grid-row: span 3;
+  }
+
+  /* TamaÃ±o panorÃ¡mico - 4x1 */
+  .gallery-item.size-panoramic {
+      grid-column: span 4;
+      grid-row: span 1;
+  }
+
+  /* TamaÃ±o banner - 4x2 */
+  .gallery-item.size-banner {
+      grid-column: span 4;
+      grid-row: span 2;
+  }
+
+  /* TamaÃ±o sÃºper alto - 1x4 */
+  .gallery-item.size-super-tall {
+      grid-column: span 1;
+      grid-row: span 4;
+  }
+
+  /* TamaÃ±o cuadrado grande - 4x4 */
+  .gallery-item.size-mega {
+      grid-column: span 4;
+      grid-row: span 4;
+  }
+
+  /* Modal Styles */
+  .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+  }
+
+  .modal-overlay.active {
+      opacity: 1;
+  }
+
+  .modal-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.9);
+      background: white;
+      border-radius: 12px;
+      max-width: 900px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      transition: transform 0.3s ease;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      display: flex;
+      flex-direction: row;
+      height: 100%;
+      padding: 40px 10px;
+      margin-bottom: 10px;
+      border-radius: 0;
+  }
+
+  .modal-overlay.active .modal-content {
+      transform: translate(-50%, -50%) scale(1);
+  }
+
+  .modal-close {
+      position: absolute;
+      top: -8px;
+      right: 10px;
+      font-size: 28px;
+      cursor: pointer;
+      color: #666;
+      z-index: 1001;
+      transition: color 0.2s ease;
+      height: 1px;
+  }
+
+  .modal-close:hover {
+      color: #333;
+  }
+
+  .modal-body {
+      padding: 30px;
+      width: 50%;
+  }
+
+  /* Review Section */
+  .review-section {
+      margin-bottom: 30px;
+      padding-bottom: 25px;
+      border-bottom: 1px solid #eee;
+  }
+
+  .review-header {
+      margin-bottom: 15px;
+  }
+
+  .review-user {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+  }
+
+  .user-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 18px;
+  }
+
+  .user-info h4 {
+      margin: 0 0 5px 0;
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+  }
+
+  .stars-container {
+      display: flex;
+      gap: 2px;
+  }
+
+  .star {
+      color: #ffd700;
+      font-size: 16px;
+  }
+
+  .star.empty {
+      color: #ddd;
+  }
+
+  .review-content {
+      line-height: 1.6;
+      color: #555;
+  }
+
+  /* Product Section */
+  .product-section {
+    padding: 30px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-direction: column;
+    width: 50%;
+    height: max-content;
+  }
+
+  .product-images {
+      position: relative;
+  }
+
+  .image-carousel {
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #f8f8f8;
+  }
+
+  .carousel-container {
+      display: flex;
+      transition: transform 0.3s ease;
+  }
+
+  .carousel-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      flex-shrink: 0;
+      aspect-ratio: 1 / 1;
+  }
+
+  .carousel-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s ease;
+  }
+
+  .carousel-btn:hover {
+      background: rgba(0, 0, 0, 0.9);
+  }
+
+  .carousel-btn.prev {
+      left: 10px;
+  }
+
+  .carousel-btn.next {
+      right: 10px;
+  }
+
+  .carousel-btn.hidden {
+      display: none;
+  }
+
+  .product-info {
+    width: 100%;
+  }
+
+  .product-info h3 {
+      margin: 0;
+      font-size: 1.3em;
+      font-weight: 600;
+      color: #333;
+      line-height: 1.3;
+  }
+
+  .product-price {
+      margin: 8px 0;
+      font-size: 1.3em;
+      font-weight: bold;
+      color: #5c3d32;
+  }
+
+  .product-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+  }
+
+  .btn-add-to-cart, .btn-custom-action {
+      padding: 12px 24px;
+      border-radius: 6px;
+      font-weight: 600;
+      text-align: center;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+  }
+  .custom-btn-add-to-cart {
+      background: transparent;
+      color: #121212;
+      border: 1px solid #121212;
+      cursor: pointer;
+      width: 100%;
+      padding: 15px;
+  }
+
+  .custom-btn-add-to-cart:hover {
+      background: #121212;
+      color: white;
+      border: 1px solid #121212;
+  }
+
+  .btn-custom-action {
+      background: transparent;
+      color: #5c3d32;
+      display: block;
+  }
+
+  .btn-custom-action:hover {
+      background: transparent;
+      color: black;
+  }
+
+  /* Responsive Design */
+
+  /* Tablets medianos */
+  @media (max-width: 1024px) {
+      .gallery-masonry {
+          grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)) !important;
+          grid-auto-rows: 180px !important;
+      }
+
+      /* Reducir tamaÃ±os en tablets */
+      .gallery-item.size-extra-wide,
+      .gallery-item.size-horizontal-large,
+      .gallery-item.size-panoramic,
+      .gallery-item.size-banner {
+          grid-column: span 2;
+      }
+
+      .gallery-item.size-extra-tall,
+      .gallery-item.size-vertical-large,
+      .gallery-item.size-super-tall {
+          grid-row: span 2;
+      }
+
+      .gallery-item.size-giant,
+      .gallery-item.size-mega {
+          grid-column: span 2;
+          grid-row: span 2;
+      }
+
+      .product-section {
+          grid-template-columns: 1fr;
+          gap: 20px;
+      }
+
+      .modal-content {
+          width: 95%;
+      }
+  }
+
+  /* Tablets pequeÃ±os */
+  @media (max-width: 768px) {
+      .gallery-masonry {
+          grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important;
+          grid-auto-rows: 160px !important;
+      }
+
+      /* Ajustar tamaÃ±os para tablets pequeÃ±os */
+      .gallery-item.size-wide,
+      .gallery-item.size-large,
+      .gallery-item.size-extra-wide,
+      .gallery-item.size-horizontal-large,
+      .gallery-item.size-panoramic,
+      .gallery-item.size-banner,
+      .gallery-item.size-vertical-large,
+      .gallery-item.size-giant,
+      .gallery-item.size-mega {
+          grid-column: span 2;
+      }
+
+      .gallery-item.size-large,
+      .gallery-item.size-tall,
+      .gallery-item.size-extra-tall,
+      .gallery-item.size-vertical-large,
+      .gallery-item.size-super-tall,
+      .gallery-item.size-giant,
+      .gallery-item.size-mega {
+          grid-row: span 2;
+      }
+
+      .modal-body {
+          padding: 20px;
+          width: 50%;
+      }
+
+      .product-section {
+          gap: 15px;
+      }
+
+      .carousel-image {
+          height: 250px;
+      }
+  }
+
+  /* MÃ³viles */
+  @media (max-width: 480px) {
+      .full-width-page {
+          margin: 0 20px;
+      }
+
+      .gallery-masonry {
+          grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important;
+          grid-auto-rows: 140px;
+          grid-gap: 0.5rem;
+      }
+
+      /* En mÃ³vil, simplificar los tamaÃ±os */
+      .gallery-item.size-wide,
+      .gallery-item.size-tall,
+      .gallery-item.size-large,
+      .gallery-item.size-extra-wide,
+      .gallery-item.size-extra-tall,
+      .gallery-item.size-horizontal-large,
+      .gallery-item.size-vertical-large,
+      .gallery-item.size-giant,
+      .gallery-item.size-panoramic,
+      .gallery-item.size-banner,
+      .gallery-item.size-super-tall,
+      .gallery-item.size-mega {
+          grid-column: span 1;
+          grid-row: span 1;
+      }
+
+      /* Solo permitir algunas imÃ¡genes destacadas en mÃ³vil */
+      .gallery-item.size-large:nth-child(-n+3),
+      .gallery-item.size-giant:nth-child(-n+2),
+      .gallery-item.size-mega:nth-child(-n+1) {
+          grid-column: span 2;
+          grid-row: span 2;
+      }
+
+      .modal-content {
+          width: 95%;
+          max-height: 95vh;
+      }
+
+      .modal-body {
+          padding: 15px;          
+          width: 50%;
+      }
+
+      .review-user {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 10px;
+      }
+
+      .carousel-image {
+          height: 200px;
+      }
+
+      .product-info h3 {
+          font-size: 20px;
+      }
+
+      .product-price {
+          font-size: 24px;
+      }
+  }
+
+  /* MÃ³viles muy pequeÃ±os */
+  @media (max-width: 320px) {
+      .gallery-masonry {
+          grid-template-columns: repeat(2, 1fr) !important;
+      }
+
+      .gallery-item {
+          grid-column: span 1 !important;
+          grid-row: span 1 !important;
+      }
+
+      .modal-close {
+          top: 10px;
+          right: 15px;
+          font-size: 24px;
+      }
+
+      .carousel-image {
+          height: 150px;
+      }
+  }
+</style>
+
+<script>
+  let currentImageIndex = 0;
+  let totalImages = 0;
+
+  function openReviewModal(blockId) {
+    const modalData = document.querySelector('.modal-data-' + blockId);
+    const modal = document.getElementById('reviewModal');
+
+    if (!modalData) return;
+
+    // Extract data
+    const userData = modalData.querySelector('[data-review-user]');
+    const descriptionData = modalData.querySelector('[data-review-description]');
+    const starsData = modalData.querySelector('[data-review-stars]');
+    const productTitle = modalData.querySelector('[data-product-title]');
+    const productPrice = modalData.querySelector('[data-product-price]');
+    const productId = modalData.querySelector('[data-product-id]');
+    const productHandle = modalData.querySelector('[data-product-handle]');
+    const productUrl = modalData.querySelector('[data-product-url]');
+    const buttonText = modalData.querySelector('[data-review-button-text]');
+    const revButtonUrl = modalData.querySelector('[data-review-button-url]');
+    const productImages = modalData.querySelectorAll('[data-product-image]');
+
+    // Capturar la data del producto
+    const productDataDiv = modalData.querySelector('.product-data');
+    const productJson = productDataDiv.getAttribute('data-product-json');
+ 
+    const productx = JSON.parse(productJson);
+
+
+    function populateVariantSelector(productx) {
+    const select = document.getElementById('select_VariantId');
+    select.innerHTML = ''; // Limpiar opciones anteriores
+    
+    productx.variants.forEach(variant => {
+            
+      if (variant.available) {
+        console.log(variant);
+        const option = document.createElement('option');
+        option.value = variant.id;
+        option.textContent = `${variant.title} - ${variant.price}`;
+        select.appendChild(option);
+      }
+    });
+    
+    // Si solo hay una variante, mantener como hidden input
+    if (productx.variants.length === 1) {
+      select.style.display = 'none';
+    } else {
+      select.style.display = 'block';
+    }
+  }
+
+
+    // Ahora puedes usar product en la función
+    populateVariantSelector(productx);
+
+    // Populate review section
+    if (userData && userData.dataset.reviewUser) {
+      const userName = userData.dataset.reviewUser;
+      document.getElementById('userName').textContent = userName;
+
+      // Create user initials
+      const initials = userName
+        .split(' ')
+        .map((name) => name.charAt(0))
+        .join('')
+        .substring(0, 2)
+        .toUpperCase();
+      document.getElementById('userInitials').textContent = initials;
+    }
+
+    if (descriptionData && descriptionData.dataset.reviewDescription) {
+      document.getElementById('reviewDescription').innerHTML = '"' + descriptionData.dataset.reviewDescription + '"';
+    }
+
+    // Product URL
+    if (productUrl && productUrl.dataset.productUrl){
+      
+      document.getElementById('customProduct_btn').href = productUrl.dataset.productUrl;
+    }
+
+    // Create stars
+    if (starsData && starsData.dataset.reviewStars) {
+        const starNumberRaw = starsData.dataset.reviewStars;
+        const starCount = parseInt(starsData.dataset.reviewStars);
+        const starsContainer = document.getElementById('starsContainer');
+        starsContainer.innerHTML = '';
+
+        const fullStar = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#FFD700" width="20" height="20">
+            <path d="M12 .587l3.668 7.431L24 9.75l-6 5.847L19.335 24 12 19.897 4.665 24 6 15.597 0 9.75l8.332-1.732z"/>
+        </svg>`;
+
+        const uniqueId = "half-" + Math.random().toString(36).substr(2, 9);
+
+        const halfStar = `
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
+            <defs>
+              <linearGradient id="${uniqueId}">
+                <stop offset="50%" stop-color="#FFD700" />
+                <stop offset="50%" stop-color="#ccc" />
+              </linearGradient>
+            </defs>
+            <path fill="url(#${uniqueId})" d="M12 .587l3.668 7.431L24 9.75l-6 5.847L19.335 24 12 19.897 4.665 24 6 15.597 0 9.75l8.332-1.732z"/>
+          </svg>`;
+
+        const emptyStar = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#ccc" width="20" height="20">
+            <path d="M12 .587l3.668 7.431L24 9.75l-6 5.847L19.335 24 12 19.897 4.665 24 6 15.597 0 9.75l8.332-1.732z"/>
+        </svg>`;
+
+        // Estrellas completas
+        let full = Math.floor(starCount);
+        for (let i = 0; i < full; i++) {
+        starsContainer.innerHTML += fullStar;
+        }
+
+        // Media estrella (si aplica)
+        if (starNumberRaw % starCount !== 0) {
+        starsContainer.innerHTML += halfStar;
+        }else{
+          // Estrellas vacías
+          let empty = 5 - full - (starCount % 1 !== 0 ? 1 : 0);
+          for (let i = 0; i < empty; i++) {
+          starsContainer.innerHTML += emptyStar;
+          }
+        }
+
+        // Numeros estrella
+        const numberStarsContainer = document.getElementById('starsNumber');
+        numberStarsContainer.innerHTML = starNumberRaw;
+
+    }
+
+    // Populate product section
+    if (productTitle && productTitle.dataset.productTitle) {
+      document.getElementById('productTitle').textContent = productTitle.dataset.productTitle;
+    }
+
+    if (productPrice && productPrice.dataset.productPrice) {
+      document.getElementById('productPrice').textContent = productPrice.dataset.productPrice;
+    }
+
+    if (productId && productId.dataset.productId) {
+      document.getElementById('productVariantId').value = productId.dataset.productId;
+    }
+
+    // Setup custom button
+    if (buttonText && buttonText.dataset.reviewButtonText) {
+      document.getElementById('customActionText').textContent = buttonText.dataset.reviewButtonText;
+    }
+    // Review URL
+    if (revButtonUrl && revButtonUrl.dataset.reviewButtonUrl) {
+      document.getElementById('customActionBtn').href = revButtonUrl.dataset.reviewButtonUrl;
+      document.getElementById('customActionBtn').style.display = 'block';
+    }else if(revButtonUrl === null){
+      document.getElementById('customActionBtn').style.display = 'none';
+    }
+
+    // Setup image carousel
+    setupImageCarousel(productImages);
+
+    // Show modal with animation
+    modal.style.display = 'block';
+    setTimeout(() => {
+      modal.classList.add('active');
+    }, 10);
+
+    // Prevent body scroll
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeReviewModal() {
+    const modal = document.getElementById('reviewModal');
+    modal.classList.remove('active');
+
+    setTimeout(() => {
+      modal.style.display = 'none';
+      document.body.style.overflow = '';
+    }, 300);
+  }
+
+  function setupImageCarousel(productImages) {
+    const carouselContainer = document.getElementById('carouselContainer');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    carouselContainer.innerHTML = '';
+    currentImageIndex = 0;
+    totalImages = productImages.length;
+
+    if (totalImages === 0) {
+      carouselContainer.innerHTML =
+        '<div style="padding: 40px; text-align: center; color: #999;">No product images available</div>';
+      prevBtn.classList.add('hidden');
+      nextBtn.classList.add('hidden');
+      return;
+    }
+
+    // Add all images to carousel
+    productImages.forEach((imageData, index) => {
+      const img = document.createElement('img');
+      img.src = imageData.dataset.productImage;
+      img.classList.add('carousel-image');
+      img.alt = 'Product image ' + (index + 1);
+      carouselContainer.appendChild(img);
+    });
+
+    // Show/hide navigation buttons
+    if (totalImages <= 1) {
+      prevBtn.classList.add('hidden');
+      nextBtn.classList.add('hidden');
+    } else {
+      prevBtn.classList.remove('hidden');
+      nextBtn.classList.remove('hidden');
+    }
+
+    updateCarousel();
+  }
+
+  function updateCarousel() {
+    const carouselContainer = document.getElementById('carouselContainer');
+    const translateX = -currentImageIndex * 100;
+    carouselContainer.style.transform = `translateX(${translateX}%)`;
+  }
+
+  function nextImage() {
+    if (currentImageIndex < totalImages - 1) {
+      currentImageIndex++;
+      updateCarousel();
+    }
+  }
+
+  function prevImage() {
+    if (currentImageIndex > 0) {
+      currentImageIndex--;
+      updateCarousel();
+    }
+  }
+
+  // Close modal when clicking outside
+  document.addEventListener('click', function (e) {
+    const modal = document.getElementById('reviewModal');
+    if (e.target === modal) {
+      closeReviewModal();
+    }
+  });
+
+  // Close modal with ESC key
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      closeReviewModal();
+    }
+  });
+  
+
+
+
+  // Note about product ratings:
+  // Shopify doesn't have native product ratings. You'll need to add this manually
+  // in the schema or use a third-party app like Judge.me or Loox.
+  // If you want to use actual product ratings, let me know and I can show you
+  // how to integrate with popular review apps.
+</script>
+
+{% schema %}
+{
+  "name": "custom-masonry-gallery",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Title"
+    },
+    {
+      "type": "richtext",
+      "id": "title_custom_masonry",
+      "label": "Put your title here:"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width_section",
+      "label": "Full width?",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Padding:"
+    },
+    {
+      "type": "range",
+      "id": "top_padding_masonry",
+      "min": 0,
+      "max": 300,
+      "step": 10,
+      "default": 0,
+      "label": "Top padding section"
+    },
+    {
+      "type": "range",
+      "id": "bottom_padding_masonry",
+      "min": 0,
+      "max": 300,
+      "step": 10,
+      "default": 0,
+      "label": "Bottom padding section"
+    },
+    {
+      "type": "header",
+      "content": "Size of Masonry Grid:"
+    },
+    {
+      "type": "range",
+      "id": "row_size_grid_masonry",
+      "label": "Choose the size level of the row",
+      "min": 50,
+      "max": 800,
+      "default": 300,
+      "step": 10
+    },
+    {
+      "type": "range",
+      "id": "colum_size_grid_masonry",
+      "label": "Choose the size level of the row",
+      "min": 1,
+      "max": 6,
+      "default": 3,
+      "step": 1
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image_block",
+      "name": "Image block",
+      "limit": 20,
+      "settings": [
+        {
+          "type": "header",
+          "content": "Product settings Info"
+        },
+        {
+          "type": "product",
+          "id": "Product_info_data",
+          "label": "Select product for data"
+        },
+
+        {
+          "type": "header",
+          "content": "👤 Review Settings"
+        },
+        {
+          "type": "text",
+          "id": "review_user_name",
+          "label": "Reviewer Name",
+          "default": "Anonymous User",
+          "info": "Name of the person writing the review"
+        },
+        {
+          "type": "richtext",
+          "id": "review_description",
+          "label": "Review Description",
+          "info": "The review content/description"
+        },
+        {
+          "type": "range",
+          "id": "review_stars",
+          "label": "Star Rating",
+          "min": 0.5,
+          "max": 5,
+          "step": 0.5,
+          "default": 5,
+          "info": "Star rating out of 5"
+        },
+        {
+          "type": "text",
+          "id": "review_button_text",
+          "label": "Custom Button Text",
+          "default": "Leave a Review",
+          "info": "Text for the second button in the modal"
+        },
+        {
+          "type": "header",
+          "content": "🖼️ Image Settings"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_box",
+          "label": "Select Image"
+        },
+        {
+          "type": "text",
+          "id": "image_alt",
+          "label": "Alt Text (Optional)",
+          "info": "Describe the image for accessibility. Leave blank to use image's default alt text."
+        },
+        {
+          "type": "select",
+          "id": "loading_type",
+          "label": "Loading Type",
+          "options": [
+            {
+              "value": "lazy",
+              "label": "Lazy (Recommended)"
+            },
+            {
+              "value": "eager",
+              "label": "Eager (Load immediately)"
+            }
+          ],
+          "default": "lazy"
+        },
+
+        {
+          "type": "header",
+          "content": "📐 Size & Layout"
+        },
+        {
+          "type": "select",
+          "id": "image_size",
+          "label": "Image Size",
+          "options": [
+            {
+              "value": "normal",
+              "label": "Normal (1x1)"
+            },
+            {
+              "value": "wide",
+              "label": "Wide (2x1)"
+            },
+            {
+              "value": "tall",
+              "label": "Tall (1x2)"
+            },
+            {
+              "value": "large",
+              "label": "Large (2x2)"
+            },
+            {
+              "value": "extra-wide",
+              "label": "Extra Wide (3x1)"
+            },
+            {
+              "value": "extra-tall",
+              "label": "Extra Tall (1x3)"
+            },
+            {
+              "value": "horizontal-large",
+              "label": "Horizontal Large (3x2)"
+            },
+            {
+              "value": "vertical-large",
+              "label": "Vertical Large (2x3)"
+            },
+            {
+              "value": "giant",
+              "label": "Giant (3x3)"
+            },
+            {
+              "value": "panoramic",
+              "label": "Panoramic (4x1)"
+            },
+            {
+              "value": "banner",
+              "label": "Banner (4x2)"
+            },
+            {
+              "value": "super-tall",
+              "label": "Super Tall (1x4)"
+            },
+            {
+              "value": "mega",
+              "label": "MEGA (4x4)"
+            }
+          ],
+          "default": "normal",
+          "info": "Choose how this image should display in the gallery"
+        },
+        {
+          "type": "range",
+          "id": "border_radius",
+          "label": "Border Radius",
+          "min": 0,
+          "max": 50,
+          "step": 2,
+          "unit": "px",
+          "default": 0
+        },
+        {
+          "type": "range",
+          "id": "image_padding",
+          "label": "Inner Padding",
+          "min": 0,
+          "max": 30,
+          "step": 2,
+          "unit": "px",
+          "default": 0,
+          "info": "Space between image and container edge"
+        },
+
+        {
+          "type": "header",
+          "content": "🎨 Visual Effects"
+        },
+        {
+          "type": "checkbox",
+          "id": "add_hover_effect",
+          "label": "Add Hover Effect",
+          "default": true,
+          "info": "Image will scale and lift on hover"
+        },
+        {
+          "type": "checkbox",
+          "id": "add_shadow",
+          "label": "Add Shadow",
+          "default": false,
+          "info": "Adds depth with shadow effect"
+        },
+        {
+          "type": "select",
+          "id": "image_filter",
+          "label": "Image Filter",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "grayscale(100%)",
+              "label": "Black & White"
+            },
+            {
+              "value": "sepia(100%)",
+              "label": "Sepia"
+            },
+            {
+              "value": "blur(2px)",
+              "label": "Slight Blur"
+            },
+            {
+              "value": "brightness(1.2)",
+              "label": "Brighter"
+            },
+            {
+              "value": "brightness(0.8)",
+              "label": "Darker"
+            },
+            {
+              "value": "contrast(1.2)",
+              "label": "High Contrast"
+            },
+            {
+              "value": "saturate(1.5)",
+              "label": "More Saturated"
+            },
+            {
+              "value": "saturate(0.5)",
+              "label": "Less Saturated"
+            }
+          ],
+          "default": "none"
+        },
+        {
+          "type": "range",
+          "id": "image_opacity",
+          "label": "Image Opacity",
+          "min": 10,
+          "max": 100,
+          "step": 5,
+          "unit": "%",
+          "default": 100
+        },
+        {
+          "type": "color",
+          "id": "custom_background_color",
+          "label": "Background Color (Optional)",
+          "info": "Color behind the image (visible with padding or transparency)"
+        },
+
+        {
+          "type": "header",
+          "content": "📝 Text Overlay"
+        },
+        {
+          "type": "text",
+          "id": "overlay_title",
+          "label": "Overlay Title (Optional)",
+          "info": "Large text that appears on hover"
+        },
+        {
+          "type": "textarea",
+          "id": "image_overlay_text",
+          "label": "Overlay Text (Optional)",
+          "info": "Description text that appears on hover"
+        },
+        {
+          "type": "color",
+          "id": "overlay_text_color",
+          "label": "Overlay Text Color",
+          "default": "#ffffff"
+        },
+        {
+          "type": "range",
+          "id": "overlay_opacity",
+          "label": "Overlay Background Opacity",
+          "min": 0,
+          "max": 90,
+          "step": 5,
+          "unit": "%",
+          "default": 50,
+          "info": "Darkness of the overlay background"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "custom-masonry-gallery",
+      "blocks": [
+        {
+          "type": "image_block"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

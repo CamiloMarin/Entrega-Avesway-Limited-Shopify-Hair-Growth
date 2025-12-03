@@ -1,0 +1,539 @@
+{% comment %}
+  Testimonial Ticker - Slider de testimonios con Swiper.js
+{% endcomment %}
+
+
+<section class="slide-option" style="margin: {{section.settings.top_padding_testimonial}}px 0 {{ section.settings.bottom_padding_testimonial }}px 0;">
+  <div class="testimonial_tick_container" 
+    style="display: flex; 
+    width: 100%;
+    {% if section.settings.is_multiple_column %} 
+
+      {% if section.settings.side_multiple_column == "title_left" %}
+        flex-direction: row;
+      {% elsif section.settings.side_multiple_column == "title_right" %}
+        flex-direction: row-reverse;
+      {% endif %}
+    {% else %}
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    {% endif %}
+    ">
+
+    <div class="container title-set-testimonial" style="{% if section.settings.is_multiple_column %}  width: 30%;  {% endif %}">
+
+    {% if section.settings.is_comma_live_on %}
+      <div class="commas-image">
+        <svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 349.078 349.078" height="800px" width="800px" id="Capa_1" version="1.1" fill="#000000">
+          <g>
+          <path d="M150.299,26.634v58.25c0,7.9-6.404,14.301-14.304,14.301c-28.186,0-43.518,28.909-45.643,85.966h45.643   c7.9,0,14.304,6.407,14.304,14.304v122.992c0,7.896-6.404,14.298-14.304,14.298H14.301C6.398,336.745,0,330.338,0,322.447V199.455   c0-27.352,2.754-52.452,8.183-74.611c5.568-22.721,14.115-42.587,25.396-59.048c11.608-16.917,26.128-30.192,43.16-39.44   C93.886,17.052,113.826,12.333,136,12.333C143.895,12.333,150.299,18.734,150.299,26.634z M334.773,99.186   c7.896,0,14.305-6.407,14.305-14.301v-58.25c0-7.9-6.408-14.301-14.305-14.301c-22.165,0-42.108,4.72-59.249,14.023   c-17.035,9.248-31.563,22.523-43.173,39.44c-11.277,16.461-19.824,36.328-25.393,59.054c-5.426,22.166-8.18,47.266-8.18,74.605   v122.992c0,7.896,6.406,14.298,14.304,14.298h121.69c7.896,0,14.299-6.407,14.299-14.298V199.455   c0-7.896-6.402-14.304-14.299-14.304h-44.992C291.873,128.095,306.981,99.186,334.773,99.186z"/>
+          </g>
+        </svg>
+        <div class="svg-container">
+          {{ section.settings.img_commas_testimonial }}
+        </div>
+      </div>
+    {% endif %}
+
+      <h3 class="no-marg">{{ section.settings.title_testimonial }}</h3>
+    </div>
+    <div id="infinite" class="highway-slider" style="{% if section.settings.is_multiple_column %}  width: 70%;  {% endif %}">
+      <div class="container highway-barrier">
+        <ul class="highway-lane">
+          {% assign blocks_count = 0 %}
+          {% for block in section.blocks %}
+          {% assign blocks_count = blocks_count | plus: 1 %}
+          <li class="highway-car">
+              <div>
+                <div class="testimonial-content">
+                    <p class="testimonial-text">
+                      {{ block.settings.comment | truncatewords: 60 }}
+                    </p>
+                    <div>
+                      <h4>
+                        {{ block.settings.title_comment }}
+                      </h4>
+                    </div>
+                    <div class="testimonial-stars">
+
+                      {% assign rating = block.settings.stars %}
+                      {% assign full_stars = rating | floor %}
+                      {% assign has_half_star = rating | minus: full_stars | round: 1 %}
+                      {% assign empty_stars = 5 | minus: full_stars | minus: has_half_star | floor %}
+
+                      <div class="stars" style="display: flex; gap: 4px;">
+                        
+                        {%- comment -%} Estrellas completas {%- endcomment -%}
+                        {% for i in (1..full_stars) %}
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#FFD700" width="20" height="20">
+                            <path d="M12 .587l3.668 7.431L24 9.75l-6 5.847L19.335 24 12 19.897 4.665 24 6 15.597 0 9.75l8.332-1.732z"/>
+                          </svg>
+                        {% endfor %}
+
+                        {%- comment -%} Media estrella {%- endcomment -%}
+                        {% if has_half_star > 0 %}
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
+                            <defs>
+                              <linearGradient id="half">
+                                <stop offset="50%" stop-color="#FFD700" />
+                                <stop offset="50%" stop-color="#ccc" />
+                              </linearGradient>
+                            </defs>
+                            <path fill="url(#half)" d="M12 .587l3.668 7.431L24 9.75l-6 5.847L19.335 24 12 19.897 4.665 24 6 15.597 0 9.75l8.332-1.732z"/>
+                          </svg>
+                        {% endif %}
+
+                        {%- comment -%} Estrellas vacías {%- endcomment -%}
+                        {% assign empty_stars = empty_stars | floor %}
+                        {% for i in (1..empty_stars) %}
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#ccc" width="20" height="20">
+                            <path d="M12 .587l3.668 7.431L24 9.75l-6 5.847L19.335 24 12 19.897 4.665 24 6 15.597 0 9.75l8.332-1.732z"/>
+                          </svg>
+                        {% endfor %}
+
+                      </div>
+
+
+
+                    </div>                
+                </div>
+
+                <div class="profile_container">
+                  {% if block.settings.profile_image %}
+                    <img src="{{ block.settings.profile_image | img_url: '100x100' }}"  width="{{ block.settings.profile_size }}" height="auto"  alt="{{ block.settings.name }}" class="testimonial-avatar" width="35px" height="auto">
+                  {% endif %}
+                  <div class="profile_content">
+                    <h4 class="testimonial-name">{{ block.settings.name }}</h4>
+                    <p class="testimonial-date">{{ block.settings.date }}</p>
+                  </div>
+
+                </div>
+
+              </div>
+          </li>
+          {% endfor %}
+
+          <!-- Copy content -->
+          {% for block in section.blocks %}
+            
+          <li class="highway-car">
+              <div>
+                <div class="testimonial-content">
+                    <p class="testimonial-text">
+                      {{ block.settings.comment | truncatewords: 60 }}
+                    </p>
+                    <div>
+                      <h4>
+                        {{ block.settings.title_comment }}
+                      </h4>
+                    </div>
+                    <div class="testimonial-stars">
+
+                      {% assign rating = block.settings.stars %}
+                      {% assign full_stars = rating | floor %}
+                      {% assign has_half_star = rating | minus: full_stars | round: 1 %}
+                      {% assign empty_stars = 5 | minus: full_stars | minus: has_half_star | floor %}
+
+                      <div class="stars" style="display: flex; gap: 4px;">
+                        
+                        {%- comment -%} Estrellas completas {%- endcomment -%}
+                        {% for i in (1..full_stars) %}
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#FFD700" width="20" height="20">
+                            <path d="M12 .587l3.668 7.431L24 9.75l-6 5.847L19.335 24 12 19.897 4.665 24 6 15.597 0 9.75l8.332-1.732z"/>
+                          </svg>
+                        {% endfor %}
+
+                        {%- comment -%} Media estrella {%- endcomment -%}
+                        {% if has_half_star > 0 %}
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
+                            <defs>
+                              <linearGradient id="half">
+                                <stop offset="50%" stop-color="#FFD700" />
+                                <stop offset="50%" stop-color="#ccc" />
+                              </linearGradient>
+                            </defs>
+                            <path fill="url(#half)" d="M12 .587l3.668 7.431L24 9.75l-6 5.847L19.335 24 12 19.897 4.665 24 6 15.597 0 9.75l8.332-1.732z"/>
+                          </svg>
+                        {% endif %}
+
+                        {%- comment -%} Estrellas vacías {%- endcomment -%}
+                        {% assign empty_stars = empty_stars | floor %}
+                        {% for i in (1..empty_stars) %}
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#ccc" width="20" height="20">
+                            <path d="M12 .587l3.668 7.431L24 9.75l-6 5.847L19.335 24 12 19.897 4.665 24 6 15.597 0 9.75l8.332-1.732z"/>
+                          </svg>
+                        {% endfor %}
+
+                      </div>
+
+
+
+                    </div>                
+                </div>
+
+                <div class="profile_container">
+                  {% if block.settings.profile_image %}
+                    <img src="{{ block.settings.profile_image | img_url: '100x100' }}"  width="{{ block.settings.profile_size }}" height="auto"  alt="{{ block.settings.name }}" class="testimonial-avatar" width="35px" height="auto">
+                  {% endif %}
+                  <div class="profile_content">
+                    <h4 class="testimonial-name">{{ block.settings.name }}</h4>
+                    <p class="testimonial-date">{{ block.settings.date }}</p>
+                  </div>
+
+                </div>
+
+              </div>
+          </li>
+          {% endfor %}
+          {% assign total_blocks = blocks_count | times: 2 %}  <!-- Duplicamos el número de bloques -->
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+
+{% assign total_blocks_plus2 = total_blocks | times: 2 %}  <!-- Duplicamos el número de bloques -->
+
+<style>
+  .commas-image svg{
+    position: relative;
+    transform: translateX(-60%);
+    width: {{ section.settings.comma_img_size }}px;
+    height: auto;
+    fill: {{ section.settings.img_commas_testimonial_color }};
+  }
+
+  .container.title-set-testimonial {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  h4.testimonial-name{
+    font-weight: bold;
+  }
+
+  p.testimonial-date {
+    font-size: small;
+  }
+
+  .profile_container{
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    position: relative;
+    top: -45px;
+    left: 15%;
+  }
+  .profile_container img{
+    height: 100%;
+  }
+
+  .profile_content > *{
+    padding: 0; 
+    margin: 0;
+  
+  }
+
+  .profile_content {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      align-items: flex-start;
+  }
+
+  .testimonial-content > *{
+    margin: 0px 20px;
+  }
+
+  .testimonial-content h4 {
+      font-style: italic;
+  }
+
+  .testimonial-content{
+    height: 280px;
+    position: relative;
+    width: 100%;
+    filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.18));
+    padding-top: 20px;
+  }
+
+  .testimonial-content:before{
+    content: "";
+    position: absolute;
+    z-index: -1;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    left: 5px;
+    clip-path: polygon(0% 0%, 100% 0%, 100% 75%, 19% 75%, 0 91%, 0% 75%);
+       
+    background-color: white;
+
+
+  }
+
+  section.slide-option {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+  }
+  section.slide-option div.container {
+    transition: all 0.3s ease;
+  }
+  section div.container h3 {
+    margin: 0 0 25px 0;
+  }
+  @media (max-width: 992px) {
+    .slide-option {
+      padding: 0 20px 0 20px;
+    }
+  }
+
+  section.slide-option .no-marg {
+    margin: 0 0 0 0;
+  }
+  div.highway-slider {
+    display: flex;
+    justify-content: center;
+  }
+  div.highway-slider div.highway-barrier {
+    overflow: hidden;
+    position: relative;
+  }
+  div.highway-slider ul.highway-lane {
+    display: flex;
+    height: 100%;
+    gap: 35px;
+  }
+  div.highway-slider ul.highway-lane li.highway-car {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #343434;
+    background-color: white;
+
+  }
+
+
+  @-webkit-keyframes translatestf {
+    0% {
+      transform: translateX(100%);
+    }
+    100% {
+      transform: translateX(-500%);
+    }
+  }
+  @keyframes translatestf {
+    0% {
+      transform: translateX(100%);
+    }
+    100% {
+      transform: translateX(-500%);
+    }
+  }
+  #stffull div.highway-barrier ul.highway-lane {
+    width: 500%;
+  }
+  #stffull div.highway-barrier ul.highway-lane li.highway-car {
+    -webkit-animation: translatestf 30s linear infinite;
+            animation: translatestf 30s linear infinite;
+  }
+  #stffull div.highway-barrier ul.highway-lane li.highway-car h4 {
+    font-size: 28px;
+  }
+  @-webkit-keyframes translateinfinite {
+    100% {
+      transform: translateX(calc(-180px * {{ total_blocks }}));
+    }
+  }
+  @keyframes translateinfinite {
+    100% {
+      transform: translateX(calc(-180px * {{ total_blocks }}));
+    }
+  }
+  #infinite div.highway-barrier {
+    background: #fff;
+  }
+  #infinite div.highway-barrier::before,
+  #infinite div.highway-barrier::after {
+    content: " ";
+    position: absolute;
+    z-index: 9;
+    width: 180px;
+    height: 100%;
+  }
+  #infinite div.highway-barrier::before {
+    top: 0;
+    left: 0;
+
+  }
+  #infinite div.highway-barrier::after {
+    top: 0;
+    right: 0;
+    background: linear-gradient(to left, #ffffff75 0%, rgba(255, 255, 255, 0) 100%);
+  }
+  #infinite div.highway-barrier ul.highway-lane {
+    width: calc(180px * {{ total_blocks_plus2 }});
+  }
+  #infinite div.highway-barrier ul.highway-lane li.highway-car {
+    width: 180px;
+    -webkit-animation: translateinfinite {{ section.settings.autoplay_speed | divided_by: 1000 }}s linear infinite;
+            animation: translateinfinite {{ section.settings.autoplay_speed | divided_by: 1000 }}s linear infinite;
+  }
+  #infinite div.highway-barrier ul.highway-lane li.highway-car span.fab {
+    font-size: 65px;
+  }
+
+  @media screen and (max-width: 768px){
+    .slide-option .testimonial_tick_container{
+      flex-direction: column !important;
+      align-items: center;
+      justify-content: center;
+    }
+
+    div.highway-slider, .container.title-set-testimonial{
+      width: 100% !important;
+    }
+
+    .commas-image svg{
+      transform: translateX(0%) !important;
+    }
+
+    .no-marg p {
+      text-align: center;
+    }
+
+    section.slide-option {
+      margin: 30px 0 30px 0;
+    }
+
+  }
+
+</style>
+
+
+
+
+{% schema %}
+{
+  "name": "Testimonial Ticker",
+  "limit": 1,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Padding:"
+    },
+    {
+      "type": "range",
+      "id": "top_padding_testimonial",
+      "min": 0,
+      "max": 300,
+      "step": 10,
+      "default": 0,
+      "label": "Top padding section"
+    },
+    {
+      "type": "range",
+      "id": "bottom_padding_testimonial",
+      "min": 0,
+      "max": 300,
+      "step": 10,
+      "default": 0,
+      "label": "Bottom padding section"
+    },
+    {
+      "type": "number",
+      "id": "autoplay_speed",
+      "label": "Velocidad del slider (ms)",
+      "default": 3000
+    },
+    {
+      "type": "checkbox",
+      "id": "is_comma_live_on",
+      "default": true,
+      "label": "Want to show commas image?"
+    },
+    {
+      "visible_if": "{{ section.settings.is_comma_live_on }}",
+      "type": "range",
+      "id": "comma_img_size",
+      "min": 50,
+      "max": 300,
+      "step": 10,
+      "default": 130,
+      "label": "Size of the comma image"
+    },
+    {
+      "visible_if": "{{ section.settings.is_comma_live_on }}",
+      "type": "color",
+      "id": "img_commas_testimonial_color",
+      "label": "Choose the color of the image commas"
+    },
+    {
+      "type": "header",
+      "content": "title text"
+    },
+    {
+      "type": "richtext",
+      "id": "title_testimonial",
+      "label": "Testimonial title"
+    },
+    {
+      "type": "checkbox",
+      "id": "is_multiple_column",
+      "default": false,
+      "label": "Does the section have multiple columns? if yes, check."
+    },
+    {
+      "type": "select",
+      "id": "side_multiple_column",
+      "label": "What side do you want the title",
+      "options": [
+
+        {
+        "label": "Left side title",
+        "value": "title_left"
+        },
+        {
+        "label": "right side title",
+        "value": "title_right"
+        }
+      ],
+      "visible_if": "{{ section.settings.is_multiple_column }}"
+    
+    }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Testimonial",
+      "settings": [
+        { "type": "image_picker", "id": "profile_image", "label": "Profile Photo" },
+        { "type": "range", "id": "profile_size", "min": 50, "max": 300, "default": 50, "step": 10, "label": "Profile image size"},
+        { "type": "text", "id": "name", "label": "Name" },
+        {"type": "text", "id": "title_comment", "label": "Title of the comment"},
+        { "type": "range", "id": "stars", "label": "Stars count", "default": 5, "min": 1, "max": 5, "step": 0.5 },
+        { "type": "text", "id": "date", "label": "Date" },
+        { "type": "textarea", "id": "comment", "label": "Comment" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Testimonial Ticker",
+      "category": "Custom", 
+      "blocks": [
+        { "type": "testimonial" },
+        { "type": "testimonial" }
+      ]
+    }
+  ]
+}
+{% endschema %}

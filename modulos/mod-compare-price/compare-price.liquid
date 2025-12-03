@@ -1,0 +1,443 @@
+<!-- sections/price-comparison.liquid -->
+{%- comment -%}
+  Sección de comparación de precios One-Time vs Subscribe - Enfocado en beneficios
+{%- endcomment -%}
+
+<div class="price-comparison-wrapper">
+  <div class="price-comparison">
+    
+    <!-- One-Time Card -->
+    <div class="price-card one-time">
+      <h2 class="plan-title">{{ section.settings.onetime_title }}</h2>
+      <p class="plan-subtitle">{{ section.settings.onetime_subtitle }}</p>
+      
+      <div class="price">
+        <span class="price-currency">{{ section.settings.currency_symbol }}</span>
+        <span class="price-amount">{{ section.settings.onetime_price }}</span>
+      </div>
+      <p class="price-period">{{ section.settings.onetime_period }}</p>
+      
+      <ul class="features">
+        <li class="feature">
+          <span class="feature-icon">{{ section.settings.onetime_price_icon }}</span>
+          <div class="feature-content">{{ section.settings.onetime_price_benefit }}</div>
+        </li>
+        <li class="feature">
+          <span class="feature-icon">{{ section.settings.onetime_gift_icon }}</span>
+          <div class="feature-content">{{ section.settings.onetime_bonus_gift }}</div>
+        </li>
+        <li class="feature">
+          <span class="feature-icon">{{ section.settings.onetime_support_icon }}</span>
+          <div class="feature-content">{{ section.settings.onetime_support }}</div>
+        </li>
+      </ul>
+    </div>
+    
+    <!-- Subscribe Card -->
+    <div class="price-card subscribe">
+      {%- if section.settings.show_popular_badge -%}
+        <div class="popular-badge">{{ section.settings.popular_badge_text }}</div>
+      {%- endif -%}
+      
+      <h2 class="plan-title">{{ section.settings.subscribe_title }}</h2>
+      <p class="plan-subtitle">{{ section.settings.subscribe_subtitle }}</p>
+      
+      <div class="price">
+        <span class="price-currency">{{ section.settings.currency_symbol }}</span>
+        <span class="price-amount">{{ section.settings.subscribe_price }}</span>
+      </div>
+      <p class="price-period">{{ section.settings.subscribe_period }}</p>
+      
+      <ul class="features">
+        <li class="feature">
+          <span class="feature-icon">{{ section.settings.subscribe_price_icon }}</span>
+          <div class="feature-content">{{ section.settings.subscribe_price_benefit }}</div>
+        </li>
+        <li class="feature">
+          <span class="feature-icon">{{ section.settings.subscribe_gift_icon }}</span>
+          <div class="feature-content">{{ section.settings.subscribe_bonus_gift }}</div>
+        </li>
+        <li class="feature">
+          <span class="feature-icon">{{ section.settings.subscribe_support_icon }}</span>
+          <div class="feature-content">{{ section.settings.subscribe_support }}</div>
+        </li>
+      </ul>
+    </div>
+    
+  </div>
+</div>
+
+<style>
+
+  .price-comparison-wrapper {
+    padding: 40px 20px;
+    background: {{ section.settings.section_background_color }};
+  }
+  
+  .price-comparison-wrapper .price-comparison {
+    max-width: 700px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: {{ section.settings.gap_width }}px;
+    background: {{  section.settings.section_background_color }};
+    border-radius: {{ section.settings.border_radius }}px;
+    overflow: hidden;
+  }
+  
+  .price-comparison-wrapper .price-card {
+    padding: 32px 24px;
+    text-align: center;
+    position: relative;
+    transition: transform 0.3s ease;
+  }
+  
+  .price-comparison-wrapper .price-card:hover {
+    transform: translateY(-2px);
+  }
+  
+  .price-comparison-wrapper .one-time {
+    background: {{ section.settings.onetime_bg_color }};
+    color: {{ section.settings.onetime_text_color }};
+  }
+  
+  .price-comparison-wrapper .subscribe {
+    background: {{ section.settings.subscribe_bg_color }};
+    color: {{ section.settings.subscribe_text_color }};
+    position: relative;
+  }
+  
+  .price-comparison-wrapper .popular-badge {
+    position: absolute;
+    top: -1px;
+    left: 90%;
+    transform: translateX(-100%);
+    background: #ff6b35;
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 6px 16px;
+    border-radius: 0 0 12px 12px;
+    letter-spacing: 0.5px;
+  }
+  
+  .price-comparison-wrapper .plan-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    margin-top: {{ section.settings.show_popular_badge | times: 16 }}px;
+  }
+  
+  .price-comparison-wrapper .plan-subtitle {
+    font-size: 14px;
+    margin-bottom: 24px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+  }
+  
+  .price-comparison-wrapper .price {
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  
+  .price-comparison-wrapper .price-currency {
+    font-size: 24px;
+    vertical-align: top;
+  }
+  
+  .price-comparison-wrapper .price-period {
+    font-size: 2rem;
+    opacity: 0.8;
+    margin-bottom: 32px;
+    font-style: italic;
+  }
+  
+  .price-comparison-wrapper .features {
+    list-style: none;
+    margin-bottom: 24px;
+    padding: 0;
+  }
+  
+  .price-comparison-wrapper .feature {
+    padding: 16px 0;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    text-align: left;
+    flex-direction: column;
+}
+  }
+  
+  .price-comparison-wrapper .feature-icon {
+    width: 24px;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  
+  .price-comparison-wrapper .feature-content {
+    flex: 1;
+    line-height: 1.4;
+    text-align: center;
+  }
+  
+  .price-comparison-wrapper .feature-content p {
+    margin: 0 0 8px 0;
+  }
+  
+  .price-comparison-wrapper .feature-content p:last-child {
+    margin-bottom: 0;
+  }
+  
+  .price-comparison-wrapper .feature-content strong {
+    font-weight: 600;
+  }
+  
+  .price-comparison-wrapper .feature-content em {
+    font-style: italic;
+    opacity: 0.9;
+  }
+
+  @media (max-width: 768px) {
+    .price-comparison-wrapper .price-comparison {
+      grid-template-columns: 1fr;
+      gap: 2px;
+    }
+    
+    .price-comparison-wrapper .price-card {
+      padding: 24px 20px;
+    }
+    
+    .price-comparison-wrapper .price {
+      font-size: 40px;
+    }
+    
+    .price-comparison-wrapper .feature {
+      padding: 12px 0;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Price Comparison",
+  "tag": "section",
+  "class": "section-price-comparison",
+  "settings": [
+    {
+      "type": "header",
+      "content": "General Settings"
+    },
+    {
+    "type": "number",
+    "id": "gap_width",
+    "default": 0,
+    "label": "Gap width:"
+    },
+    {
+      "type": "color",
+      "id": "section_background_color",
+      "label": "Section background color",
+      "default": "#f8f9fa"
+    },
+    {
+      "type": "text",
+      "id": "currency_symbol",
+      "label": "Currency symbol",
+      "default": "$"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "One-Time Purchase"
+    },
+    {
+      "type": "text",
+      "id": "onetime_title",
+      "label": "Title",
+      "default": "One-Time"
+    },
+    {
+      "type": "text",
+      "id": "onetime_subtitle",
+      "label": "Subtitle",
+      "default": "Single purchase"
+    },
+    {
+      "type": "text",
+      "id": "onetime_price",
+      "label": "Price",
+      "default": "29"
+    },
+    {
+      "type": "text",
+      "id": "onetime_period",
+      "label": "Period text",
+      "default": "Pay once"
+    },
+    {
+      "type": "image_picker",
+      "id": "onetime_price_icon",
+      "label": "Price benefit icon",
+    },
+    {
+      "type": "richtext",
+      "id": "onetime_price_benefit",
+      "label": "Price benefit description",
+      "default": "<p><strong>No recurring charges</strong><br>Pay once and own it forever</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "onetime_gift_icon",
+      "label": "Bonus gift icon",
+    },
+    {
+      "type": "richtext",
+      "id": "onetime_bonus_gift",
+      "label": "Bonus gift description",
+      "default": "<p><strong>Free shipping included</strong><br>No additional costs at checkout</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "onetime_support_icon",
+      "label": "Support icon",
+    },
+    {
+      "type": "richtext",
+      "id": "onetime_support",
+      "label": "Support description",
+      "default": "<p><strong>Email support</strong><br>Get help when you need it</p>"
+    },
+    {
+      "type": "color",
+      "id": "onetime_bg_color",
+      "label": "Background color",
+      "default": "#667eea"
+    },
+    {
+      "type": "color",
+      "id": "onetime_text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Subscribe"
+    },
+    {
+      "type": "text",
+      "id": "subscribe_title",
+      "label": "Title",
+      "default": "Subscribe"
+    },
+    {
+      "type": "text",
+      "id": "subscribe_subtitle",
+      "label": "Subtitle",
+      "default": "Monthly delivery"
+    },
+    {
+      "type": "text",
+      "id": "subscribe_price",
+      "label": "Price",
+      "default": "19"
+    },
+    {
+      "type": "text",
+      "id": "subscribe_period",
+      "label": "Period text",
+      "default": "per month"
+    },
+    {
+      "type": "image_picker",
+      "id": "subscribe_price_icon",
+      "label": "Price benefit icon",
+    },
+    {
+      "type": "richtext",
+      "id": "subscribe_price_benefit",
+      "label": "Price benefit description",
+      "default": "<p><strong>Lower monthly cost</strong><br>Save money with subscription pricing</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "subscribe_gift_icon",
+      "label": "Bonus gift icon",
+    },
+    {
+      "type": "richtext",
+      "id": "subscribe_bonus_gift",
+      "label": "Bonus gift description",
+      "default": "<p><strong>Monthly bonus gifts</strong><br>Exclusive items delivered every month</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "subscribe_support_icon",
+      "label": "VIP Support icon",
+    },
+    {
+      "type": "richtext",
+      "id": "subscribe_support",
+      "label": "VIP Support description",
+      "default": "<p><strong>VIP Priority Support</strong><br>Get premium assistance and faster response times</p>"
+    },
+    {
+      "type": "color",
+      "id": "subscribe_bg_color",
+      "label": "Background color",
+      "default": "#f093fb"
+    },
+    {
+      "type": "color",
+      "id": "subscribe_text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Popular Badge"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_popular_badge",
+      "label": "Show popular badge",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "popular_badge_text",
+      "label": "Badge text",
+      "default": "POPULAR"
+    },
+    {
+      "type": "color",
+      "id": "popular_badge_color",
+      "label": "Badge color",
+      "default": "#ff6b35"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Price Comparison"
+    }
+  ]
+}
+{% endschema %}

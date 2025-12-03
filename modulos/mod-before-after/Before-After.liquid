@@ -1,0 +1,757 @@
+<!-- before-after-slider.liquid -->
+{% comment %}
+Sección personalizable de Antes/Después para Shopify
+Permite comparar dos imágenes con un slider interactivo
+{% endcomment %}
+
+{%- assign section_id = section.id -%}
+{%- assign before_image = section.settings.before_image -%}
+{%- assign after_image = section.settings.after_image -%}
+{%- assign section_width = section.settings.section_width -%}
+{%- assign handle_color = section.settings.handle_color -%}
+{%- assign handle_width = section.settings.handle_width -%}
+{%- assign border_radius = section.settings.border_radius -%}
+{%- assign show_labels = section.settings.show_labels -%}
+{%- assign before_label = section.settings.before_label -%}
+{%- assign after_label = section.settings.after_label -%}
+{%- assign initial_position = section.settings.initial_position -%}
+
+<div class="before-after-section" id="section-{{ section_id }}">
+  <div class="container {% if section.settings.full_width_page_class %} page-width {% endif %}">
+    <div class="section-content" data-layout="{{ section.settings.layout_direction }}" data-text-position="{{ section.settings.text_position }}">
+      
+      <div class="text-content">
+        {% if section.settings.heading != blank %}
+          <h2 class="before-after-heading">{{ section.settings.heading }}</h2>
+        {% endif %}
+        
+        {% if section.settings.description != blank %}
+          <div class="before-after-description">
+            {{ section.settings.description }}
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="slider-content">
+        <div class="before-after-slider-container">
+          <div class="before-after-slider" data-initial-position="{{ initial_position }}">
+            {% if before_image != blank %}
+              <img src="{{ before_image | img_url: 'master' }}" 
+                   alt="{{ before_image.alt | default: 'Imagen antes' }}" 
+                   class="before-image"
+                  width="100%"
+                  height="100%">
+            {% else %}
+              <div class="placeholder-image before-placeholder">
+                <span>Imagen Antes</span>
+              </div>
+            {% endif %}
+
+            {% if after_image != blank %}
+              <img src="{{ after_image | img_url: 'master' }}" 
+                   alt="{{ after_image.alt | default: 'Imagen después' }}" 
+                   class="after-image"
+                  height="100%"
+                  width="100%">
+            {% else %}
+              <div class="placeholder-image after-placeholder">
+                <span>Imagen Después</span>
+              </div>
+            {% endif %}
+
+            <div class="slider-handle">
+              <div class="handle-circle">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2"/>
+                  <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2"/>
+                </svg>
+              </div>
+            </div>
+
+            {% if show_labels %}
+              <div class="image-label before-label">{{ before_label | default: 'Antes' }}</div>
+              <div class="image-label after-label">{{ after_label | default: 'Después' }}</div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  #section-{{ section_id }} {
+    padding: {{ section.settings.section_padding_top }}px 0 {{ section.settings.section_padding_bottom }}px;
+    background-color: {{ section.settings.background_color }};
+  }
+
+  #section-{{ section_id }} .container {
+    max-width: {{ section_width }}px;
+    margin: 0 auto;
+    {% if section.settings.full_width_page_class == 'false' %}padding: 0 20px;{% endif %}
+  }
+
+  #section-{{ section_id }} .section-content {
+    display: flex;
+    align-items: {{ section.settings.content_alignment }};
+    gap: {{ section.settings.content_gap }}px;
+  }
+
+  #section-{{ section_id }} .section-content[data-layout="horizontal"] {
+    flex-direction: row;
+  }
+
+  #section-{{ section_id }} .section-content[data-layout="vertical"] {
+    flex-direction: column;
+  }
+
+  #section-{{ section_id }} .section-content[data-layout="horizontal"][data-text-position="right"] {
+    flex-direction: row-reverse;
+  }
+
+  #section-{{ section_id }} .text-content {
+    flex: 0 0 {{ section.settings.text_width }}%;
+    text-align: {{ section.settings.text_alignment }};
+  }
+
+  #section-{{ section_id }} .slider-content {
+    flex: 1;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  #section-{{ section_id }} .before-after-heading {
+    font-size: {{ section.settings.heading_size }}px;
+    color: {{ section.settings.heading_color }};
+    margin-bottom: 20px;
+    font-weight: {{ section.settings.heading_weight }};
+  }
+
+  #section-{{ section_id }} .before-after-description {
+    font-size: {{ section.settings.description_size }}px;
+    color: {{ section.settings.description_color }};
+    line-height: 1.6;
+  }
+
+  #section-{{ section_id }} .before-after-slider-container {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    margin: auto;
+    overflow: hidden;
+    border-radius: {{ border_radius }}px;
+    box-shadow: {{ section.settings.box_shadow }};
+  }
+
+  #section-{{ section_id }} .before-after-slider {
+    position: relative;
+    width: 100%;
+    background: #f8f8f8;
+    aspect-ratio: {{ section.settings.aspect_ratio }};
+  }
+
+  #section-{{ section_id }} .before-image,
+  #section-{{ section_id }} .after-image,
+  #section-{{ section_id }} .placeholder-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    pointer-events: none; 
+  }
+
+  #section-{{ section_id }} .before-image {
+    z-index: 1;
+  }
+
+  #section-{{ section_id }} .after-image {
+    z-index: 2;
+    clip-path: polygon({{ initial_position }}% 0%, 100% 0%, 100% 100%, {{ initial_position }}% 100%);
+  }
+
+  #section-{{ section_id }} .placeholder-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e1e1e1;
+    color: #666;
+    font-size: 18px;
+    border: 2px dashed #ccc;
+  }
+
+  #section-{{ section_id }} .slider-handle {
+    position: absolute;
+    top: 0;
+    left: {{ initial_position }}%;
+    width: {{ handle_width }}px;
+    height: 100%;
+    background-color: {{ handle_color }};
+    cursor: ew-resize;
+    z-index: 2;
+    transform: translateX(-50%);
+    user-select: none;
+    transition: opacity 0.3s ease;
+  }
+
+  #section-{{ section_id }} .handle-circle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    background: {{ handle_color }};
+    border: 3px solid white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  }
+
+  #section-{{ section_id }} .image-label {
+    position: absolute;
+    top: 20px;
+    padding: 8px 16px;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 4;
+    pointer-events: none;
+  }
+
+  #section-{{ section_id }} .before-label {
+    left: 20px;
+  }
+
+  #section-{{ section_id }} .after-label {
+    right: 20px;
+  }
+
+  /* Hover effects */
+  #section-{{ section_id }} .slider-handle:hover {
+    opacity: 0.9;
+  }
+
+  #section-{{ section_id }} .handle-circle:hover {
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+
+  /* Mobile - siempre vertical */
+  @media (max-width: 768px) {
+    #section-{{ section_id }} .section-content {
+      flex-direction: column !important;
+    }
+    
+    #section-{{ section_id }} .text-content {
+      flex: none;
+      width: 100%;
+    }
+  }
+
+  /* Mobile responsiveness */
+  @media (max-width: 768px) {
+    #section-{{ section_id }} .container {
+      padding: 0 15px;
+    }
+
+    #section-{{ section_id }} .before-after-heading {
+      font-size: {{ section.settings.heading_size | minus: 8 }}px;
+    }
+
+    #section-{{ section_id }} .before-after-description {
+      font-size: {{ section.settings.description_size | minus: 2 }}px;
+    }
+
+    #section-{{ section_id }} .handle-circle {
+      width: 35px;
+      height: 35px;
+    }
+
+    #section-{{ section_id }} .image-label {
+      font-size: 12px;
+      padding: 6px 12px;
+      top: 15px;
+    }
+
+    #section-{{ section_id }} .before-label {
+      left: 15px;
+    }
+
+    #section-{{ section_id }} .after-label {
+      right: 15px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    #section-{{ section_id }} .slider-handle {
+      width: {{ handle_width | minus: 2 }}px;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const slider = document.querySelector('#section-{{ section_id }} .before-after-slider');
+    const handle = document.querySelector('#section-{{ section_id }} .slider-handle');
+    const afterImage = document.querySelector('#section-{{ section_id }} .after-image');
+
+    if (!slider || !handle || !afterImage) return;
+
+    let isDragging = false;
+    let initialPosition = parseFloat(slider.dataset.initialPosition) || 50;
+
+    // Touch support
+    let isTouch = false;
+
+    // Initialize
+    updateSlider(initialPosition);
+
+    // Mouse events
+    handle.addEventListener('mousedown', startDrag);
+    document.addEventListener('mousemove', drag);
+    document.addEventListener('mouseup', endDrag);
+
+    // Touch events
+    handle.addEventListener('touchstart', function(e) {
+      isTouch = true;
+      startDrag(e.touches[0]);
+    });
+
+    document.addEventListener('touchmove', function(e) {
+      if (isTouch) {
+        e.preventDefault();
+        drag(e.touches[0]);
+      }
+    });
+
+    document.addEventListener('touchend', function() {
+      if (isTouch) {
+        endDrag();
+        isTouch = false;
+      }
+    });
+
+    // Click to move slider
+    slider.addEventListener('click', function(e) {
+      if (!isDragging) {
+        const rect = slider.getBoundingClientRect();
+        const percent = ((e.clientX - rect.left) / rect.width) * 100;
+        updateSlider(Math.max(0, Math.min(100, percent)));
+      }
+    });
+
+    function startDrag(e) {
+      isDragging = true;
+      document.body.style.cursor = 'ew-resize';
+      document.body.style.userSelect = 'none';
+    }
+
+    function drag(e) {
+      if (!isDragging) return;
+
+      const rect = slider.getBoundingClientRect();
+      const clientX = e.clientX || e.pageX;
+      const percent = ((clientX - rect.left) / rect.width) * 100;
+      
+      updateSlider(Math.max(0, Math.min(100, percent)));
+    }
+
+    function endDrag() {
+      isDragging = false;
+      document.body.style.cursor = 'default';
+      document.body.style.userSelect = 'auto';
+    }
+
+    function updateSlider(percent) {
+      handle.style.left = percent + '%';
+      afterImage.style.clipPath = `polygon(${percent}% 0%, 100% 0%, 100% 100%, ${percent}% 100%)`;
+    }
+
+    // Keyboard accessibility
+    handle.setAttribute('tabindex', '0');
+    handle.addEventListener('keydown', function(e) {
+      const currentPercent = parseFloat(handle.style.left) || initialPosition;
+      let newPercent = currentPercent;
+
+      switch(e.key) {
+        case 'ArrowLeft':
+          newPercent = Math.max(0, currentPercent - 5);
+          break;
+        case 'ArrowRight':
+          newPercent = Math.min(100, currentPercent + 5);
+          break;
+        case 'Home':
+          newPercent = 0;
+          break;
+        case 'End':
+          newPercent = 100;
+          break;
+        default:
+          return;
+      }
+
+      e.preventDefault();
+      updateSlider(newPercent);
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Antes/Después Slider",
+  "tag": "section",
+  "limit": 1,
+  "class": "before-after-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Contenido"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width_page_class",
+      "label": "Is section full width?",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Título",
+      "default": "Comparación Antes/Después"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Descripción",
+      "default": "Desliza para ver la transformación increíble."
+    },
+    {
+      "type": "image_picker",
+      "id": "before_image",
+      "label": "Imagen Antes"
+    },
+    {
+      "type": "image_picker",
+      "id": "after_image",
+      "label": "Imagen Después"
+    },
+    {
+      "type": "header",
+      "content": "Layout y Posicionamiento"
+    },
+    {
+      "type": "select",
+      "id": "layout_direction",
+      "label": "Dirección del layout",
+      "options": [
+        {
+          "value": "vertical",
+          "label": "Vertical"
+        },
+        {
+          "value": "horizontal",
+          "label": "Horizontal"
+        }
+      ],
+      "default": "vertical"
+    },
+    {
+      "type": "select",
+      "id": "text_position",
+      "label": "Posición del texto (solo horizontal)",
+      "options": [
+        {
+          "value": "left",
+          "label": "Izquierda"
+        },
+        {
+          "value": "right",
+          "label": "Derecha"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "text_width",
+      "label": "Ancho del contenido de texto (%)",
+      "min": 20,
+      "max": 60,
+      "step": 5,
+      "default": 40,
+      "unit": "%"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Alineación del texto",
+      "options": [
+        {
+          "value": "left",
+          "label": "Izquierda"
+        },
+        {
+          "value": "center",
+          "label": "Centro"
+        },
+        {
+          "value": "right",
+          "label": "Derecha"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "label": "Alineación vertical del contenido",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "Superior"
+        },
+        {
+          "value": "center",
+          "label": "Centro"
+        },
+        {
+          "value": "flex-end",
+          "label": "Inferior"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "content_gap",
+      "label": "Espaciado entre contenido y slider",
+      "min": 20,
+      "max": 80,
+      "step": 10,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Configuración del Slider"
+    },
+    {
+      "type": "range",
+      "id": "initial_position",
+      "label": "Posición inicial del slider (%)",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 50,
+      "unit": "%"
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio",
+      "label": "Proporción de aspecto",
+      "options": [
+        {
+          "value": "16/9",
+          "label": "16:9 (Widescreen)"
+        },
+        {
+          "value": "4/3",
+          "label": "4:3 (Estándar)"
+        },
+        {
+          "value": "1/1",
+          "label": "1:1 (Cuadrado)"
+        },
+        {
+          "value": "3/4",
+          "label": "3:4 (Retrato)"
+        },
+        {
+          "value": "auto",
+          "label": "Automático"
+        }
+      ],
+      "default": "16/9"
+    },
+    {
+      "type": "header",
+      "content": "Etiquetas"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_labels",
+      "label": "Mostrar etiquetas",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "before_label",
+      "label": "Etiqueta 'Antes'",
+      "default": "Antes"
+    },
+    {
+      "type": "text",
+      "id": "after_label",
+      "label": "Etiqueta 'Después'",
+      "default": "Después"
+    },
+    {
+      "type": "header",
+      "content": "Estilo del Título"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Tamaño del título",
+      "min": 16,
+      "max": 48,
+      "step": 2,
+      "default": 32,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Color del título",
+      "default": "#000000"
+    },
+    {
+      "type": "select",
+      "id": "heading_weight",
+      "label": "Peso del título",
+      "options": [
+        {
+          "value": "300",
+          "label": "Ligero"
+        },
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medio"
+        },
+        {
+          "value": "600",
+          "label": "Semi-bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "header",
+      "content": "Estilo de la Descripción"
+    },
+    {
+      "type": "range",
+      "id": "description_size",
+      "label": "Tamaño de la descripción",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": "Color de la descripción",
+      "default": "#666666"
+    },
+    {
+      "type": "header",
+      "content": "Estilo del Handle"
+    },
+    {
+      "type": "color",
+      "id": "handle_color",
+      "label": "Color del handle",
+      "default": "#ff0000"
+    },
+    {
+      "type": "range",
+      "id": "handle_width",
+      "label": "Ancho del handle",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "default": 4,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Diseño y Layout"
+    },
+    {
+      "type": "range",
+      "id": "section_width",
+      "label": "Ancho máximo de la sección",
+      "min": 600,
+      "max": 1400,
+      "step": 50,
+      "default": 1200,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Radio del borde",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "default": 8,
+      "unit": "px"
+    },
+    {
+      "type": "text",
+      "id": "box_shadow",
+      "label": "Sombra (CSS)",
+      "default": "0 4px 20px rgba(0,0,0,0.1)",
+      "info": "Ejemplo: 0 4px 20px rgba(0,0,0,0.1)"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Color de fondo de la sección",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "section_padding_top",
+      "label": "Padding superior",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 50,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "section_padding_bottom",
+      "label": "Padding inferior",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 50,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Slider Antes/Después"
+    }
+  ]
+}
+{% endschema %}
